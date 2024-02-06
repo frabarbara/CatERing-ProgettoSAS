@@ -109,7 +109,7 @@ UNLOCK TABLES;
 LOCK TABLES `turns` WRITE;
 ALTER TABLE `turns` AUTO_INCREMENT = 0;
 INSERT INTO `turns` (feedback, capacity)
-VALUES ('', 10),
+VALUES ('Prof meritiamo il 30', 10),
        ('', 5),
        ('', 20);
 UNLOCK TABLES;

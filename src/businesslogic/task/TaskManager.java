@@ -172,6 +172,25 @@ public class TaskManager {
         return CatERing.getInstance().getTurnManager().getFeedback(t);
     }
 
+    public void resetTaskSheet(ServiceInfo s) throws UseCaseLogicException {
+        User user = CatERing.getInstance().getUserManager().getCurrentUser();
+
+        if (!user.isChef()) {
+            throw new UseCaseLogicException("[TaskManager: assignCook(..)] ERROR: current user has to be a chef");
+        }
+
+        if (currentEvent.getAssignedChef().getId() != user.getId()) {
+            throw new UseCaseLogicException("[TaskManager: assignCook(..)] ERROR: current user is not the assigned chef for this event");
+        }
+
+        TaskSheet ts = s.getTaskSheet();
+        for (Task t: ts.getTasks()) {
+            ts.deleteTask(t);
+        }
+
+        notifyTaskSheetReset(s);
+    }
+
     /*############################## EVENT EMITTER METHODS ##############################*/
 
     public void addEventReceiver(TaskEventReceiver rec) {
@@ -203,6 +222,12 @@ public class TaskManager {
     private void notifyCookAssigned(Task task, Cook cook) {
         for (TaskEventReceiver er: eventReceivers) {
             er.updateCookAssigned(task, cook);
+        }
+    }
+
+    private void notifyTaskSheetReset(ServiceInfo s) {
+        for (TaskEventReceiver er: eventReceivers) {
+            er.updateTaskSheetReset(s);
         }
     }
 

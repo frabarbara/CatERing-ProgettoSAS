@@ -30,14 +30,18 @@ public class ServiceInfo implements EventItemInfo {
         this.name = name;
     }
 
+    /*#################### GETTERS / SETTERS ####################*/
+
+    public int getId() { return this.id; }
+
+    public TaskSheet getTaskSheet() {
+        return taskSheet;
+    }
+
     /*#################### METHODS ####################*/
 
     public String toString() {
         return name + ": " + date + " (" + timeStart + "-" + timeEnd + "), " + participants + " pp.";
-    }
-
-    public TaskSheet getTaskSheet() {
-        return taskSheet;
     }
 
     // STATIC METHODS FOR PERSISTENCE
@@ -63,5 +67,23 @@ public class ServiceInfo implements EventItemInfo {
         });
 
         return result;
+    }
+
+    public static ServiceInfo loadServiceById(int serviceID) {
+        ServiceInfo[] result = new ServiceInfo[1];
+        String query = "SELECT * FROM services WHERE id = " + serviceID + ";";
+        PersistenceManager.executeQuery(query, rs -> {
+            String s = rs.getString("name");
+            result[0] = new ServiceInfo(s);
+            result[0].id = serviceID;
+            result[0].date = rs.getDate("service_date");
+            result[0].timeStart = rs.getTime("time_start");
+            result[0].timeEnd = rs.getTime("time_end");
+            result[0].participants = rs.getInt("expected_participants");
+            result[0].taskSheet = new TaskSheet(serviceID);
+            result[0].taskSheet.setTasks(TaskSheet.loadTaskSheetInfoForService(serviceID));
+        });
+
+        return result[0];
     }
 }

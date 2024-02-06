@@ -73,6 +73,10 @@ public class TaskSheet {
         this.tasks.add(pos, t);
     }
 
+    public void deleteTask(Task t) {
+        this.tasks.remove(t);
+    }
+
     /*############################## PERSISTENCE METHODS ##############################*/
 
     public static ObservableList<Task> loadTaskSheetInfoForService(int serviceID) {

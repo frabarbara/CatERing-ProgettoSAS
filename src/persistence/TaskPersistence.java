@@ -1,5 +1,6 @@
 package persistence;
 
+import businesslogic.event.ServiceInfo;
 import businesslogic.task.Task;
 import businesslogic.task.TaskEventReceiver;
 import businesslogic.task.TaskSheet;
@@ -26,5 +27,10 @@ public class TaskPersistence implements TaskEventReceiver {
     public void updateCookAssigned(Task t, Cook c) {
         Task.saveCookAssigned(t, c);
         // Cook.removeAvailability(t.getAssignedTurn(), c);
+    }
+
+    @Override
+    public void updateTaskSheetReset(ServiceInfo s) {
+        Task.eraseAllServiceTasks(s);
     }
 }

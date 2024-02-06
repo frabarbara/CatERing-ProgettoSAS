@@ -1,5 +1,6 @@
 package businesslogic.task;
 
+import businesslogic.event.ServiceInfo;
 import businesslogic.recipe.Recipe;
 import businesslogic.turn.Turn;
 import businesslogic.user.Cook;
@@ -70,8 +71,8 @@ public class Task {
 
     @Override
     public String toString() {
-        String res = "TASK " + this.id + ": " + this.qty + " x " + this.job.getName() + "\n";
-        if (this.assignedTurn != null) res += "\tscheduled in turn " + this.assignedTurn.getId();
+        String res = "TASK " + this.id + ": " + this.qty + " x " + this.job.getName();
+        if (this.assignedTurn != null) res += "\t - \tscheduled in turn " + this.assignedTurn.getId();
         if (this.assignedCook != null) res += " with cook " + this.assignedCook.getName();
 
         return res;
@@ -132,6 +133,11 @@ public class Task {
 
     public static void saveCookAssigned(Task task, Cook cook) {
         String query = "UPDATE tasks SET assigned_cook_id = " + cook.getId() + " WHERE id = " + task.getId() + ";";
+        PersistenceManager.executeUpdate(query);
+    }
+
+    public static void eraseAllServiceTasks(ServiceInfo s) {
+        String query = "DELETE FROM tasks WHERE service_id = " + s.getId() + ";";
         PersistenceManager.executeUpdate(query);
     }
 }
