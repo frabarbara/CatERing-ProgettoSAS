@@ -2,6 +2,7 @@ package businesslogic.turn;
 
 import businesslogic.UseCaseLogicException;
 import businesslogic.task.Task;
+import businesslogic.user.Cook;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import persistence.PersistenceManager;
@@ -27,7 +28,6 @@ public class TurnManager {
 
     public void scheduleTask(Task task, Turn turn) throws UseCaseLogicException {
         int turnIdx = this.turnTable.indexOf(turn);
-        System.out.println(turnIdx);
         Turn tableTurn = this.turnTable.get(turnIdx);
 
         if (tableTurn.isFull()) {
@@ -35,6 +35,20 @@ public class TurnManager {
         }
 
         task.setAssignedTurn(tableTurn);
+    }
+
+    public void assignCook(Task task, Cook cook) throws UseCaseLogicException {
+        Turn turn = task.getAssignedTurn();
+
+        if (!cook.isAvailable(turn)) {
+            throw new UseCaseLogicException("[TurnManager: assignCook(...)] ERROR: cook is not available in the specified turn");
+        }
+
+        task.assignCook(cook);
+    }
+
+    public String getFeedback(Turn t) {
+        return t.getFeedback();
     }
 
     /*############################## PERSISTENCE METHODS ##############################*/

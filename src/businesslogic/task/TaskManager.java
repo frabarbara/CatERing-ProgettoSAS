@@ -6,6 +6,7 @@ import businesslogic.event.EventInfo;
 import businesslogic.event.ServiceInfo;
 import businesslogic.recipe.Recipe;
 import businesslogic.turn.Turn;
+import businesslogic.user.Cook;
 import businesslogic.user.User;
 import javafx.collections.ObservableList;
 
@@ -68,11 +69,11 @@ public class TaskManager {
         User user = CatERing.getInstance().getUserManager().getCurrentUser();
 
         if (!user.isChef()) {
-            throw new UseCaseLogicException("[TaskManager: openTaskSheet(..)] ERROR: current user has to be a chef");
+            throw new UseCaseLogicException("[TaskManager: insertTask(..)] ERROR: current user has to be a chef");
         }
 
         if (currentEvent.getAssignedChef().getId() != user.getId()) {
-            throw new UseCaseLogicException("[TaskManager: openTaskSheet(..)] ERROR: current user is not the assigned chef for this event");
+            throw new UseCaseLogicException("[TaskManager: insertTask(..)] ERROR: current user is not the assigned chef for this event");
         }
 
         Task newTask = currentTaskSheet.addTask(job, qty);
@@ -86,11 +87,11 @@ public class TaskManager {
         User user = CatERing.getInstance().getUserManager().getCurrentUser();
 
         if (!user.isChef()) {
-            throw new UseCaseLogicException("[TaskManager: openTaskSheet(..)] ERROR: current user has to be a chef");
+            throw new UseCaseLogicException("[TaskManager: sortTask(..)] ERROR: current user has to be a chef");
         }
 
         if (currentEvent.getAssignedChef().getId() != user.getId()) {
-            throw new UseCaseLogicException("[TaskManager: openTaskSheet(..)] ERROR: current user is not the assigned chef for this event");
+            throw new UseCaseLogicException("[TaskManager: sortTask(..)] ERROR: current user is not the assigned chef for this event");
         }
 
         try {
@@ -107,7 +108,7 @@ public class TaskManager {
         User user = CatERing.getInstance().getUserManager().getCurrentUser();
 
         if (!user.isChef()) {
-            throw new UseCaseLogicException("[TaskManager: openTaskSheet(..)] ERROR: current user has to be a chef");
+            throw new UseCaseLogicException("[TaskManager: getTurnTable(..)] ERROR: current user has to be a chef");
         }
 
         return CatERing.getInstance().getTurnManager().getTurnTable();
@@ -117,15 +118,15 @@ public class TaskManager {
         User user = CatERing.getInstance().getUserManager().getCurrentUser();
 
         if (!user.isChef()) {
-            throw new UseCaseLogicException("[TaskManager: openTaskSheet(..)] ERROR: current user has to be a chef");
+            throw new UseCaseLogicException("[TaskManager: scheduleTask(..)] ERROR: current user has to be a chef");
         }
 
         if (currentEvent.getAssignedChef().getId() != user.getId()) {
-            throw new UseCaseLogicException("[TaskManager: openTaskSheet(..)] ERROR: current user is not the assigned chef for this event");
+            throw new UseCaseLogicException("[TaskManager: scheduleTask(..)] ERROR: current user is not the assigned chef for this event");
         }
 
         if (task.isScheduled()) {
-            throw new UseCaseLogicException("[TaskManager: openTaskSheet(..)] ERROR: selected task is already scheduled");
+            throw new UseCaseLogicException("[TaskManager: scheduleTask(..)] ERROR: selected task is already scheduled");
         }
 
         try {
@@ -135,6 +136,40 @@ public class TaskManager {
             System.err.println(e.getMessage());
         }
 
+    }
+
+    public void assignCook(Task task, Cook cook) throws UseCaseLogicException {
+        User user = CatERing.getInstance().getUserManager().getCurrentUser();
+
+        if (!user.isChef()) {
+            throw new UseCaseLogicException("[TaskManager: assignCook(..)] ERROR: current user has to be a chef");
+        }
+
+        if (currentEvent.getAssignedChef().getId() != user.getId()) {
+            throw new UseCaseLogicException("[TaskManager: assignCook(..)] ERROR: current user is not the assigned chef for this event");
+        }
+
+        if (!task.isScheduled()) {
+            throw new UseCaseLogicException("[TaskManager: assignCook(..)] ERROR: selected task is not scheduled");
+        }
+
+        CatERing.getInstance().getTurnManager().assignCook(task, cook);
+
+        notifyCookAssigned(task, cook);
+    }
+
+    public String readFeedback(Turn t) throws UseCaseLogicException {
+        User user = CatERing.getInstance().getUserManager().getCurrentUser();
+
+        if (!user.isChef()) {
+            throw new UseCaseLogicException("[TaskManager: assignCook(..)] ERROR: current user has to be a chef");
+        }
+
+        if (currentEvent.getAssignedChef().getId() != user.getId()) {
+            throw new UseCaseLogicException("[TaskManager: assignCook(..)] ERROR: current user is not the assigned chef for this event");
+        }
+
+        return CatERing.getInstance().getTurnManager().getFeedback(t);
     }
 
     /*############################## EVENT EMITTER METHODS ##############################*/
@@ -162,6 +197,12 @@ public class TaskManager {
     private void notifyTaskScheduled(Task task, Turn turn) {
         for (TaskEventReceiver er: eventReceivers) {
             er.updateTaskScheduled(task, turn);
+        }
+    }
+
+    private void notifyCookAssigned(Task task, Cook cook) {
+        for (TaskEventReceiver er: eventReceivers) {
+            er.updateCookAssigned(task, cook);
         }
     }
 

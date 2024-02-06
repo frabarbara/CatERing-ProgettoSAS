@@ -2,6 +2,7 @@ package businesslogic.task;
 
 import businesslogic.recipe.Recipe;
 import businesslogic.turn.Turn;
+import businesslogic.user.Cook;
 import businesslogic.user.User;
 import persistence.PersistenceManager;
 
@@ -12,7 +13,7 @@ public class Task {
     private int id;
     private Recipe job;
     private int qty;
-    private User assignedCook;
+    private Cook assignedCook;
     private Turn assignedTurn;
 
     /*############################## CONSTRUCTORS ##############################*/
@@ -53,15 +54,15 @@ public class Task {
         this.qty = qty;
     }
 
-    public User getAssignedCook() {
+    public Cook getAssignedCook() {
         return assignedCook;
     }
 
-    public void setAssignedCook(User assignedCook) {
+    public void setAssignedCook(Cook assignedCook) {
         this.assignedCook = assignedCook;
     }
 
-    private Turn getAssignedTurn() { return this.assignedTurn; }
+    public Turn getAssignedTurn() { return this.assignedTurn; }
 
     public void setAssignedTurn(Turn assignedTurn) { this.assignedTurn = assignedTurn; }
 
@@ -69,8 +70,9 @@ public class Task {
 
     @Override
     public String toString() {
-        String res = "TASK " + this.id + ": " + this.qty + " x " + this.job.getName();
-        if (this.assignedTurn != null) res += ", scheduled in turn " + this.getAssignedTurn().getId();
+        String res = "TASK " + this.id + ": " + this.qty + " x " + this.job.getName() + "\n";
+        if (this.assignedTurn != null) res += "\tscheduled in turn " + this.assignedTurn.getId();
+        if (this.assignedCook != null) res += " with cook " + this.assignedCook.getName();
 
         return res;
     }
@@ -89,6 +91,10 @@ public class Task {
         return this.assignedTurn != null;
     }
 
+    public void assignCook(Cook cook) {
+        this.assignedCook = cook;
+    }
+
     /*############################## PERSISTENCE METHODS ##############################*/
 
     public static Task loadTaskById(int taskID) {
@@ -98,11 +104,14 @@ public class Task {
             loadedTask.setId(rs.getInt("id"));
             loadedTask.setJob(Recipe.loadRecipeById(rs.getInt("recipe_id")));
             loadedTask.setQty(rs.getInt("qty"));
-            loadedTask.setAssignedCook(User.loadUserById(rs.getInt("assigned_cook_id")));
+
+            int assignedCookId = rs.getInt("assigned_cook_id");
+            if (assignedCookId != 0)
+                loadedTask.setAssignedCook(new Cook(User.loadUserById(assignedCookId)));
+
             int assignedTurnId = rs.getInt("turn_id");
-            if (assignedTurnId != 0) {
+            if (assignedTurnId != 0)
                 loadedTask.setAssignedTurn(Turn.loadTurnById(assignedTurnId));
-            }
         });
 
         return loadedTask;
@@ -118,6 +127,11 @@ public class Task {
     public static void saveSchedule(Task task, Turn turn) {
 
         String query = "INSERT INTO scheduled_tasks (task_id, turn_id) VALUES(" + task.getId() + ", " + turn.getId() + ");";
+        PersistenceManager.executeUpdate(query);
+    }
+
+    public static void saveCookAssigned(Task task, Cook cook) {
+        String query = "UPDATE tasks SET assigned_cook_id = " + cook.getId() + " WHERE id = " + task.getId() + ";";
         PersistenceManager.executeUpdate(query);
     }
 }
