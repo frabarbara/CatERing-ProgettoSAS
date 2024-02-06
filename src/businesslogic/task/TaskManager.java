@@ -11,14 +11,20 @@ import java.util.ArrayList;
 
 public class TaskManager {
 
+    /*############################## PROPERTIES ##############################*/
+
     private EventInfo currentEvent;
     private TaskSheet currentTaskSheet;
     private ArrayList<TaskEventReceiver> eventReceivers;
+
+    /*############################## CONSTRUCTORS ##############################*/
 
     public TaskManager() {
         super();
         this.eventReceivers = new ArrayList<>();
     }
+
+    /*############################## GETTERS / SETTERS ##############################*/
 
     public EventInfo getCurrentEvent() {
         return currentEvent;
@@ -36,11 +42,13 @@ public class TaskManager {
         this.currentTaskSheet = currentTaskSheet;
     }
 
+    /*############################## METHODS ##############################*/
+
     public void openEvent(int eventID) {
         setCurrentEvent(CatERing.getInstance().getEventManager().getEvent(eventID));
     }
 
-    public TaskSheet openTaskSheet(ServiceInfo service) throws UseCaseLogicException {
+    public void openTaskSheet(ServiceInfo service) throws UseCaseLogicException {
         User user = CatERing.getInstance().getUserManager().getCurrentUser();
 
         if (!user.isChef()) {
@@ -48,15 +56,13 @@ public class TaskManager {
         }
 
         if (currentEvent.getAssignedChef().getId() != user.getId()) {
-            throw new UseCaseLogicException("[TaskManager: openTaskSheet(..)] ERROR: current user does not ");
+            throw new UseCaseLogicException("[TaskManager: openTaskSheet(..)] ERROR: current user is not the assigned chef for this event");
         }
 
         setCurrentTaskSheet(service.getTaskSheet());
-
-        return currentTaskSheet;
     }
 
-    public void insertTask(Recipe job, int qty) throws UseCaseLogicException {
+    public Task insertTask(Recipe job, int qty) throws UseCaseLogicException {
         User user = CatERing.getInstance().getUserManager().getCurrentUser();
 
         if (!user.isChef()) {
@@ -64,12 +70,35 @@ public class TaskManager {
         }
 
         if (currentEvent.getAssignedChef().getId() != user.getId()) {
-            throw new UseCaseLogicException("[TaskManager: openTaskSheet(..)] ERROR: current user does not ");
+            throw new UseCaseLogicException("[TaskManager: openTaskSheet(..)] ERROR: current user is not the assigned chef for this event");
         }
 
         Task newTask = currentTaskSheet.addTask(job, qty);
 
         notifyTaskAdded(currentTaskSheet, newTask);
+
+        return newTask;
+    }
+
+    public void sortTask(Task t, int pos) throws UseCaseLogicException {
+        User user = CatERing.getInstance().getUserManager().getCurrentUser();
+
+        if (!user.isChef()) {
+            throw new UseCaseLogicException("[TaskManager: openTaskSheet(..)] ERROR: current user has to be a chef");
+        }
+
+        if (currentEvent.getAssignedChef().getId() != user.getId()) {
+            throw new UseCaseLogicException("[TaskManager: openTaskSheet(..)] ERROR: current user is not the assigned chef for this event");
+        }
+
+        try {
+            this.currentTaskSheet.sortTask(t, pos);
+        } catch (IllegalArgumentException e) {
+            System.err.println(e.getMessage());
+        }
+
+        this.notifyTasksRearranged();
+
     }
 
 
@@ -86,6 +115,12 @@ public class TaskManager {
     private void notifyTaskAdded(TaskSheet ts, Task t) {
         for (TaskEventReceiver er: eventReceivers) {
             er.updateTaskAdded(ts, t);
+        }
+    }
+
+    private void notifyTasksRearranged() {
+        for (TaskEventReceiver er: eventReceivers) {
+            er.updateTasksRearranged(this.currentTaskSheet);
         }
     }
 

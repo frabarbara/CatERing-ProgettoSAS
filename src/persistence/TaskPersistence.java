@@ -8,6 +8,10 @@ public class TaskPersistence implements TaskEventReceiver {
 
     @Override
     public void updateTaskAdded(TaskSheet ts, Task t) {
-        TaskSheet.saveNewTask(ts.getId(), t);
+        int pos = ts.getTaskPosition(t);
+        Task.saveNewTask(ts.getId(), t, pos);
     }
+
+    @Override
+    public void updateTasksRearranged(TaskSheet ts) { TaskSheet.saveTasksOrder(ts); }
 }
