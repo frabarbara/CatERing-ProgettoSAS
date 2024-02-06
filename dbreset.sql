@@ -1,18 +1,12 @@
-DELETE
-FROM MenuItems
-WHERE true;
-DELETE
-FROM MenuSections
-WHERE true;
-DELETE
-FROM MenuFeatures
-WHERE true;
-DELETE
-FROM Menus
-WHERE true;
-DELETE
-FROM Services
-WHERE true;
+DELETE FROM MenuItems WHERE true;
+DELETE FROM MenuSections WHERE true;
+DELETE FROM MenuFeatures WHERE true;
+DELETE FROM Menus WHERE true;
+DELETE FROM scheduled_tasks WHERE true;
+DELETE FROM tasks WHERE true;
+DELETE FROM Services WHERE true;
+DELETE FROM cooks_availabilities WHERE true;
+DELETE FROM turns WHERE true;
 
 /* FILL Menus */
 LOCK TABLES `Menus` WRITE;
@@ -109,4 +103,29 @@ VALUES (1, 2, 'Cena', 86, 0, '2020-08-13', '20:00:00', '23:30:00', 25),
        (8, 3, 'Pranzo giorno 3', 0, 0, '2020-10-04', '12:00:00', '15:00:00', 400);
 /*!40000 ALTER TABLE `Services`
     ENABLE KEYS */;
+UNLOCK TABLES;
+
+/* FILL turns */
+LOCK TABLES `turns` WRITE;
+ALTER TABLE `turns` AUTO_INCREMENT = 0;
+INSERT INTO `turns` (feedback, capacity)
+VALUES ('', 10),
+       ('', 5),
+       ('', 20);
+UNLOCK TABLES;
+
+/* FILL tasks */
+LOCK TABLES `tasks` WRITE;
+ALTER TABLE `tasks` AUTO_INCREMENT = 0;
+INSERT INTO tasks (service_id, recipe_id, qty, position)
+VALUES (6, 5, 10, 0);
+UNLOCK TABLES;
+
+/* FILL cooks_availabilities */
+LOCK TABLES `cooks_availabilities` WRITE;
+INSERT INTO catering.cooks_availabilities (cook_id, turn_id)
+VALUES (4, 2),
+       (4, 1),
+       (5, 2),
+       (6, 1);
 UNLOCK TABLES;
