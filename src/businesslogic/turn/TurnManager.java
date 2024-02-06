@@ -51,6 +51,17 @@ public class TurnManager {
         return t.getFeedback();
     }
 
+    public void rescheduleTask(Task task, Turn newTurn) throws UseCaseLogicException {
+        int idx = turnTable.indexOf(newTurn);
+        Turn listedTurn = turnTable.get(idx);
+
+        if (listedTurn.isFull()) {
+            throw new UseCaseLogicException("[TurnManager: rescheduleTask(..)] ERROR: turn selected is already full");
+        }
+
+        task.setAssignedTurn(listedTurn);
+    }
+
     /*############################## PERSISTENCE METHODS ##############################*/
 
     public static ObservableList<Turn> loadAllTurns() {

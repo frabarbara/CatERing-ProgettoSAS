@@ -33,4 +33,24 @@ public class TaskPersistence implements TaskEventReceiver {
     public void updateTaskSheetReset(ServiceInfo s) {
         Task.eraseAllServiceTasks(s);
     }
+
+    @Override
+    public void updateQtyChanged(TaskSheet ts, Task t) {
+        Task.updateNewQty(ts, t);
+    }
+
+    @Override
+    public void updateAvailChanged(TaskSheet ts, Task t) {
+        Task.updateNewAvail(ts, t);
+    }
+
+    @Override
+    public void updateTaskDeleted(TaskSheet ts, Task t) {
+        Task.eraseTask(t);
+    }
+
+    @Override
+    public void updateTaskRescheduled(Task task, Turn newTurn) {
+        Task.saveReschedule(task, newTurn);
+    }
 }

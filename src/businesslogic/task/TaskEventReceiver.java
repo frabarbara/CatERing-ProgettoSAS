@@ -11,5 +11,9 @@ public interface TaskEventReceiver {
     public void updateTaskScheduled(Task task, Turn turn);
     public void updateCookAssigned(Task t, Cook c);
     public void updateTaskSheetReset(ServiceInfo s);
+    public void updateQtyChanged(TaskSheet ts, Task t);
+    public void updateAvailChanged(TaskSheet ts, Task t);
+    public void updateTaskDeleted(TaskSheet ts, Task t);
+    public void updateTaskRescheduled(Task task, Turn newTurn);
 
 }

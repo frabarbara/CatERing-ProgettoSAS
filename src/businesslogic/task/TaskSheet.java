@@ -77,6 +77,22 @@ public class TaskSheet {
         this.tasks.remove(t);
     }
 
+    public Task updateQty(Task t, int newQty) {
+        int idx = tasks.indexOf(t);
+        Task modifiedTask = tasks.get(idx);
+        modifiedTask.updateQty(newQty);
+
+        return modifiedTask;
+    }
+
+    public Task updateAvail(Task t, int avail) {
+        int idx = tasks.indexOf(t);
+        Task modifiedTask = tasks.get(idx);
+        modifiedTask.updateAvail(avail);
+
+        return modifiedTask;
+    }
+
     /*############################## PERSISTENCE METHODS ##############################*/
 
     public static ObservableList<Task> loadTaskSheetInfoForService(int serviceID) {
@@ -139,5 +155,4 @@ public class TaskSheet {
             }
         });
     }
-
 }

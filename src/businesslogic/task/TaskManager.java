@@ -47,34 +47,30 @@ public class TaskManager {
 
     /*############################## METHODS ##############################*/
 
+    private void checkUserIsAssignedChef(String methodName) throws UseCaseLogicException {
+        User user = CatERing.getInstance().getUserManager().getCurrentUser();
+
+        if (!user.isChef()) {
+            throw new UseCaseLogicException("[TaskManager: " + methodName + "(..)] ERROR: current user has to be a chef");
+        }
+
+        if (currentEvent.getAssignedChef().getId() != user.getId()) {
+            throw new UseCaseLogicException("[TaskManager: " + methodName + "(..)] ERROR: current user is not the assigned chef for this event");
+        }
+    }
+
     public void openEvent(int eventID) {
         setCurrentEvent(CatERing.getInstance().getEventManager().getEvent(eventID));
     }
 
     public void openTaskSheet(ServiceInfo service) throws UseCaseLogicException {
-        User user = CatERing.getInstance().getUserManager().getCurrentUser();
-
-        if (!user.isChef()) {
-            throw new UseCaseLogicException("[TaskManager: openTaskSheet(..)] ERROR: current user has to be a chef");
-        }
-
-        if (currentEvent.getAssignedChef().getId() != user.getId()) {
-            throw new UseCaseLogicException("[TaskManager: openTaskSheet(..)] ERROR: current user is not the assigned chef for this event");
-        }
+        checkUserIsAssignedChef("openTaskSheet");
 
         setCurrentTaskSheet(service.getTaskSheet());
     }
 
     public Task insertTask(Recipe job, int qty) throws UseCaseLogicException {
-        User user = CatERing.getInstance().getUserManager().getCurrentUser();
-
-        if (!user.isChef()) {
-            throw new UseCaseLogicException("[TaskManager: insertTask(..)] ERROR: current user has to be a chef");
-        }
-
-        if (currentEvent.getAssignedChef().getId() != user.getId()) {
-            throw new UseCaseLogicException("[TaskManager: insertTask(..)] ERROR: current user is not the assigned chef for this event");
-        }
+        checkUserIsAssignedChef("insertTask");
 
         Task newTask = currentTaskSheet.addTask(job, qty);
 
@@ -84,15 +80,7 @@ public class TaskManager {
     }
 
     public void sortTask(Task t, int pos) throws UseCaseLogicException {
-        User user = CatERing.getInstance().getUserManager().getCurrentUser();
-
-        if (!user.isChef()) {
-            throw new UseCaseLogicException("[TaskManager: sortTask(..)] ERROR: current user has to be a chef");
-        }
-
-        if (currentEvent.getAssignedChef().getId() != user.getId()) {
-            throw new UseCaseLogicException("[TaskManager: sortTask(..)] ERROR: current user is not the assigned chef for this event");
-        }
+        checkUserIsAssignedChef("sortTask");
 
         try {
             this.currentTaskSheet.sortTask(t, pos);
@@ -115,15 +103,7 @@ public class TaskManager {
     }
 
     public void scheduleTask(Task task, Turn turn) throws UseCaseLogicException {
-        User user = CatERing.getInstance().getUserManager().getCurrentUser();
-
-        if (!user.isChef()) {
-            throw new UseCaseLogicException("[TaskManager: scheduleTask(..)] ERROR: current user has to be a chef");
-        }
-
-        if (currentEvent.getAssignedChef().getId() != user.getId()) {
-            throw new UseCaseLogicException("[TaskManager: scheduleTask(..)] ERROR: current user is not the assigned chef for this event");
-        }
+        checkUserIsAssignedChef("scheduleTask");
 
         if (task.isScheduled()) {
             throw new UseCaseLogicException("[TaskManager: scheduleTask(..)] ERROR: selected task is already scheduled");
@@ -139,15 +119,7 @@ public class TaskManager {
     }
 
     public void assignCook(Task task, Cook cook) throws UseCaseLogicException {
-        User user = CatERing.getInstance().getUserManager().getCurrentUser();
-
-        if (!user.isChef()) {
-            throw new UseCaseLogicException("[TaskManager: assignCook(..)] ERROR: current user has to be a chef");
-        }
-
-        if (currentEvent.getAssignedChef().getId() != user.getId()) {
-            throw new UseCaseLogicException("[TaskManager: assignCook(..)] ERROR: current user is not the assigned chef for this event");
-        }
+        checkUserIsAssignedChef("assignCook");
 
         if (!task.isScheduled()) {
             throw new UseCaseLogicException("[TaskManager: assignCook(..)] ERROR: selected task is not scheduled");
@@ -159,29 +131,13 @@ public class TaskManager {
     }
 
     public String readFeedback(Turn t) throws UseCaseLogicException {
-        User user = CatERing.getInstance().getUserManager().getCurrentUser();
-
-        if (!user.isChef()) {
-            throw new UseCaseLogicException("[TaskManager: assignCook(..)] ERROR: current user has to be a chef");
-        }
-
-        if (currentEvent.getAssignedChef().getId() != user.getId()) {
-            throw new UseCaseLogicException("[TaskManager: assignCook(..)] ERROR: current user is not the assigned chef for this event");
-        }
+        checkUserIsAssignedChef("readFeedback");
 
         return CatERing.getInstance().getTurnManager().getFeedback(t);
     }
 
     public void resetTaskSheet(ServiceInfo s) throws UseCaseLogicException {
-        User user = CatERing.getInstance().getUserManager().getCurrentUser();
-
-        if (!user.isChef()) {
-            throw new UseCaseLogicException("[TaskManager: assignCook(..)] ERROR: current user has to be a chef");
-        }
-
-        if (currentEvent.getAssignedChef().getId() != user.getId()) {
-            throw new UseCaseLogicException("[TaskManager: assignCook(..)] ERROR: current user is not the assigned chef for this event");
-        }
+        checkUserIsAssignedChef("resetTaskSheet");
 
         TaskSheet ts = s.getTaskSheet();
         for (Task t: ts.getTasks()) {
@@ -189,6 +145,54 @@ public class TaskManager {
         }
 
         notifyTaskSheetReset(s);
+    }
+
+    public void changeQty(Task t, int newQty) throws UseCaseLogicException {
+        checkUserIsAssignedChef("changeQty");
+
+        if (currentTaskSheet == null) {
+            throw new UseCaseLogicException("[TaskManager: changeQty(..)] ERROR: current task sheet is null");
+        }
+
+        if (t == null) {
+            throw new UseCaseLogicException("[TaskManager: changeQty(..)] ERROR: selected task is null");
+        }
+
+        if (newQty < 1) {
+            throw new UseCaseLogicException("[TaskManager: changeQty(..)] ERROR: quantity must be a positive amount");
+        }
+
+        Task modifiedTask = currentTaskSheet.updateQty(t, newQty);
+
+        notifyQtyChanged(currentTaskSheet, modifiedTask);
+    }
+
+    public void changeAvail(Task task, int avail) throws UseCaseLogicException {
+        checkUserIsAssignedChef("changeAvail");
+
+        if (avail < 1 || avail > task.getQty()) {
+            throw new UseCaseLogicException(("[TaskManager: changeAvail(..)] ERROR: illegal availability value"));
+        }
+
+        Task modifiedTask = currentTaskSheet.updateAvail(task, avail);
+
+        notifyAvailChanged(currentTaskSheet, modifiedTask);
+    }
+
+    public void deleteTask(Task task) throws UseCaseLogicException {
+        checkUserIsAssignedChef("deleteTask");
+
+        currentTaskSheet.deleteTask(task);
+
+        notifyTaskDeleted(currentTaskSheet, task);
+    }
+
+    public void rescheduleTask(Task task, Turn newTurn) throws UseCaseLogicException {
+        checkUserIsAssignedChef("rescheduleTask");
+
+        CatERing.getInstance().getTurnManager().rescheduleTask(task, newTurn);
+
+        notifyTaskRescheduled(task, newTurn);
     }
 
     /*############################## EVENT EMITTER METHODS ##############################*/
@@ -228,6 +232,30 @@ public class TaskManager {
     private void notifyTaskSheetReset(ServiceInfo s) {
         for (TaskEventReceiver er: eventReceivers) {
             er.updateTaskSheetReset(s);
+        }
+    }
+
+    private void notifyQtyChanged(TaskSheet ts, Task t) {
+        for (TaskEventReceiver er: eventReceivers) {
+            er.updateQtyChanged(ts, t);
+        }
+    }
+
+    private void notifyAvailChanged(TaskSheet ts, Task t) {
+        for (TaskEventReceiver er: eventReceivers) {
+            er.updateAvailChanged(ts, t);
+        }
+    }
+
+    private void notifyTaskDeleted(TaskSheet ts, Task t) {
+        for (TaskEventReceiver er: eventReceivers) {
+            er.updateTaskDeleted(ts, t);
+        }
+    }
+
+    private void notifyTaskRescheduled(Task task, Turn newTurn) {
+        for (TaskEventReceiver er: eventReceivers) {
+            er.updateTaskRescheduled(task, newTurn);
         }
     }
 
