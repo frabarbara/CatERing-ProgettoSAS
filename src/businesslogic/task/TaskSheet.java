@@ -78,6 +78,7 @@ public class TaskSheet {
     public static ObservableList<Task> loadTaskSheetInfoForService(int serviceID) {
 
         // classe di supporto per poter caricare i Task nel TaskSheet secondo le posizioni riportate in DB
+        // pattern decorator??
 
         class OrderedTask {
             private Task t;
@@ -103,11 +104,7 @@ public class TaskSheet {
         String query = "SELECT * FROM tasks WHERE service_id = '" + serviceID + "'";
 
         PersistenceManager.executeQuery(query, rs -> {
-            Recipe r = Recipe.loadRecipeById(rs.getInt("recipe_id"));
-            int qty = rs.getInt("qty");
-            Task newTask = new Task(r, qty);
-            newTask.setId(rs.getInt("id"));
-            newTask.setAssignedCook(User.loadUserById(rs.getInt("assigned_cook_id")));
+            Task newTask = Task.loadTaskById(rs.getInt("id"));
             midResult.add(new OrderedTask(newTask, rs.getInt("position")));
         });
 

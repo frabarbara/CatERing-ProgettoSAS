@@ -5,6 +5,7 @@ import businesslogic.menu.Menu;
 import businesslogic.menu.MenuManager;
 import businesslogic.recipe.RecipeManager;
 import businesslogic.task.TaskManager;
+import businesslogic.turn.TurnManager;
 import businesslogic.user.UserManager;
 import persistence.MenuPersistence;
 import persistence.PersistenceManager;
@@ -25,6 +26,7 @@ public class CatERing {
     private UserManager userMgr;
     private EventManager eventMgr;
     private TaskManager taskMgr;
+    private TurnManager turnMgr;
 
     private MenuPersistence menuPersistence;
     private TaskPersistence taskPersistence;
@@ -35,6 +37,7 @@ public class CatERing {
         userMgr = new UserManager();
         eventMgr = new EventManager();
         taskMgr = new TaskManager();
+        turnMgr = new TurnManager();
         menuPersistence = new MenuPersistence();
         menuMgr.addEventReceiver(menuPersistence);
         taskPersistence = new TaskPersistence();
@@ -57,5 +60,7 @@ public class CatERing {
     public EventManager getEventManager() { return eventMgr; }
 
     public TaskManager getTaskManager() { return taskMgr; }
+
+    public TurnManager getTurnManager() { return turnMgr; }
 
 }

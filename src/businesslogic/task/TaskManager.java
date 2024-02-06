@@ -5,7 +5,9 @@ import businesslogic.UseCaseLogicException;
 import businesslogic.event.EventInfo;
 import businesslogic.event.ServiceInfo;
 import businesslogic.recipe.Recipe;
+import businesslogic.turn.Turn;
 import businesslogic.user.User;
+import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
 
@@ -101,6 +103,39 @@ public class TaskManager {
 
     }
 
+    public ObservableList<Turn> getTurnTable() throws UseCaseLogicException {
+        User user = CatERing.getInstance().getUserManager().getCurrentUser();
+
+        if (!user.isChef()) {
+            throw new UseCaseLogicException("[TaskManager: openTaskSheet(..)] ERROR: current user has to be a chef");
+        }
+
+        return CatERing.getInstance().getTurnManager().getTurnTable();
+    }
+
+    public void scheduleTask(Task task, Turn turn) throws UseCaseLogicException {
+        User user = CatERing.getInstance().getUserManager().getCurrentUser();
+
+        if (!user.isChef()) {
+            throw new UseCaseLogicException("[TaskManager: openTaskSheet(..)] ERROR: current user has to be a chef");
+        }
+
+        if (currentEvent.getAssignedChef().getId() != user.getId()) {
+            throw new UseCaseLogicException("[TaskManager: openTaskSheet(..)] ERROR: current user is not the assigned chef for this event");
+        }
+
+        if (task.isScheduled()) {
+            throw new UseCaseLogicException("[TaskManager: openTaskSheet(..)] ERROR: selected task is already scheduled");
+        }
+
+        try {
+            CatERing.getInstance().getTurnManager().scheduleTask(task, turn);
+            notifyTaskScheduled(task, turn);
+        } catch (UseCaseLogicException e) {
+            System.err.println(e.getMessage());
+        }
+
+    }
 
     /*############################## EVENT EMITTER METHODS ##############################*/
 
@@ -121,6 +156,12 @@ public class TaskManager {
     private void notifyTasksRearranged() {
         for (TaskEventReceiver er: eventReceivers) {
             er.updateTasksRearranged(this.currentTaskSheet);
+        }
+    }
+
+    private void notifyTaskScheduled(Task task, Turn turn) {
+        for (TaskEventReceiver er: eventReceivers) {
+            er.updateTaskScheduled(task, turn);
         }
     }
 
