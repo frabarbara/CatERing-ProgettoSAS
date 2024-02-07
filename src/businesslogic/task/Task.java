@@ -186,4 +186,9 @@ public class Task {
         query = "DELETE FROM scheduled_tasks WHERE task_id = " + t.getId() + ";";
         PersistenceManager.executeUpdate(query);
     }
+
+    public static void updateChangeCook(Task t, Cook newCook) {
+        String query = "UPDATE tasks SET assigned_cook_id = " + newCook.getId() + " WHERE id = " + t.getId() + ";";
+        PersistenceManager.executeUpdate(query);
+    }
 }

@@ -72,7 +72,7 @@ public class TestTaskManagement5a {
             System.out.println("task after rescheduling:\n" + Task.loadTaskById(taskToRescheduleId));
 
         } catch (UseCaseLogicException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
     }
 

@@ -42,7 +42,7 @@ public class TestTaskManagement2a {
             System.out.println(Task.loadTaskById(1));
 
         } catch (UseCaseLogicException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
     }
 

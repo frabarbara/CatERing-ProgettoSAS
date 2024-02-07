@@ -66,6 +66,13 @@ public class TurnManager {
         t.setAssignedTurn(null);
     }
 
+    public void changeCook(Task t, Cook newCook) throws UseCaseLogicException {
+        Turn turn = t.getAssignedTurn();
+        if (!newCook.isAvailable(turn)) throw new UseCaseLogicException("[TurnManager: changeCook(..)] ERROR: selected cook is not available in task's turn");
+
+        t.assignCook(newCook);
+    }
+
     /*############################## PERSISTENCE METHODS ##############################*/
 
     public static ObservableList<Turn> loadAllTurns() {

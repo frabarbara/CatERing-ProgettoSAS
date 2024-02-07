@@ -58,4 +58,9 @@ public class TaskPersistence implements TaskEventReceiver {
     public void updateTaskRemoved(Task t) {
         Task.updateRemoveTask(t);
     }
+
+    @Override
+    public void updateCookChanged(Task t, Cook newCook) {
+        Task.updateChangeCook(t, newCook);
+    }
 }

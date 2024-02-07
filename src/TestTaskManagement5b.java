@@ -69,7 +69,7 @@ public class TestTaskManagement5b {
             System.out.println("task after removing:\n" + Task.loadTaskById(taskToRemoveId));
 
         } catch (UseCaseLogicException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
     }
 

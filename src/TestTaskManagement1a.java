@@ -37,7 +37,7 @@ public class TestTaskManagement1a {
             System.out.println(ServiceInfo.loadServiceById(6).getTaskSheet());
 
         } catch (UseCaseLogicException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
     }
 

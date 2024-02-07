@@ -16,5 +16,6 @@ public interface TaskEventReceiver {
     public void updateTaskDeleted(TaskSheet ts, Task t);
     public void updateTaskRescheduled(Task task, Turn newTurn);
     public void updateTaskRemoved(Task t);
+    public void updateCookChanged(Task t, Cook newCook);
 
 }

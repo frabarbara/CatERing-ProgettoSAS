@@ -204,6 +204,18 @@ public class TaskManager {
         notifyTaskRemoved(task);
     }
 
+    public void changeCook(Task task, Cook newCook) throws UseCaseLogicException {
+        checkUserIsAssignedChef("changeCook");
+
+        if (!task.isScheduled()) {
+            throw new UseCaseLogicException("[TaskManager: changeCook(..)] ERROR: selected task is not scheduled");
+        }
+
+        CatERing.getInstance().getTurnManager().changeCook(task, newCook);
+
+        notifyCookChanged(task, newCook);
+    }
+
     /*############################## EVENT EMITTER METHODS ##############################*/
 
     public void addEventReceiver(TaskEventReceiver rec) {
@@ -271,6 +283,12 @@ public class TaskManager {
     private void notifyTaskRemoved(Task t) {
         for (TaskEventReceiver er: eventReceivers) {
             er.updateTaskRemoved(t);
+        }
+    }
+
+    private void notifyCookChanged(Task t, Cook newCook) {
+        for (TaskEventReceiver er: eventReceivers) {
+            er.updateCookChanged(t, newCook);
         }
     }
 

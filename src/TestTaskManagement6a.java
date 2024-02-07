@@ -9,7 +9,7 @@ import businesslogic.user.Cook;
 import businesslogic.user.User;
 import javafx.collections.ObservableList;
 
-public class TestTaskManagement {
+public class TestTaskManagement6a {
 
     public static void main(String[] args) {
 
@@ -68,9 +68,11 @@ public class TestTaskManagement {
 
             System.out.println("cook " + Task.loadTaskById(taskId).getAssignedCook() + " assigned to task " + taskId);
 
-            // READ FEEDBACK
-            System.out.println("\nREADING FEEDBACK");
-            System.out.println(taskMgr.readFeedback(Turn.loadTurnById(1)));
+            // CHANGE COOK FOR TASK
+            System.out.println("\nCHANGING COOK");
+            taskMgr.changeCook(Task.loadTaskById(taskId), new Cook(User.loadUserById(4)));
+
+            System.out.println("cook " + Task.loadTaskById(taskId).getAssignedCook() + " assigned to task " + taskId);
 
         } catch (UseCaseLogicException e) {
             System.err.println(e.getMessage());
