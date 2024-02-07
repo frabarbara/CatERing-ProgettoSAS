@@ -41,6 +41,9 @@ public class TestTaskManagement2a {
             System.out.println("task after change:");
             System.out.println(Task.loadTaskById(1));
 
+            // RESET DB TO STARTING CONDITIONS
+            TestUtils.resetDB();
+
         } catch (UseCaseLogicException e) {
             System.err.println(e.getMessage());
         }

@@ -36,6 +36,9 @@ public class TestTaskManagement1a {
             System.out.println("task sheet after reset:");
             System.out.println(ServiceInfo.loadServiceById(6).getTaskSheet());
 
+            // RESET DB TO STARTING CONDITIONS
+            TestUtils.resetDB();
+
         } catch (UseCaseLogicException e) {
             System.err.println(e.getMessage());
         }

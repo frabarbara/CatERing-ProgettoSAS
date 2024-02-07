@@ -71,6 +71,9 @@ public class TestTaskManagement5a {
 
             System.out.println("task after rescheduling:\n" + Task.loadTaskById(taskToRescheduleId));
 
+            // RESET DB TO STARTING CONDITIONS
+            TestUtils.resetDB();
+
         } catch (UseCaseLogicException e) {
             System.err.println(e.getMessage());
         }

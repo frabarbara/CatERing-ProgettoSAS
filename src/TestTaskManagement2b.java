@@ -36,6 +36,9 @@ public class TestTaskManagement2b {
             System.out.println("task sheet after change:");
             System.out.println(TaskSheet.loadTaskSheetInfoForService(6));
 
+            // RESET DB TO STARTING CONDITIONS
+            TestUtils.resetDB();
+
         } catch (UseCaseLogicException e) {
             System.err.println(e.getMessage());
         }

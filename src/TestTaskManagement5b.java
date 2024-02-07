@@ -68,6 +68,9 @@ public class TestTaskManagement5b {
 
             System.out.println("task after removing:\n" + Task.loadTaskById(taskToRemoveId));
 
+            // RESET DB TO STARTING CONDITIONS
+            TestUtils.resetDB();
+
         } catch (UseCaseLogicException e) {
             System.err.println(e.getMessage());
         }

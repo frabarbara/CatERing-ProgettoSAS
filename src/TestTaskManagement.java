@@ -8,6 +8,10 @@ import businesslogic.turn.Turn;
 import businesslogic.user.Cook;
 import businesslogic.user.User;
 import javafx.collections.ObservableList;
+import persistence.PersistenceManager;
+
+import java.io.IOException;
+import java.util.Scanner;
 
 public class TestTaskManagement {
 
@@ -71,6 +75,9 @@ public class TestTaskManagement {
             // READ FEEDBACK
             System.out.println("\nREADING FEEDBACK");
             System.out.println(taskMgr.readFeedback(Turn.loadTurnById(1)));
+
+            // RESET DB TO STARTING CONDITIONS
+            TestUtils.resetDB();
 
         } catch (UseCaseLogicException e) {
             System.err.println(e.getMessage());

@@ -1,7 +1,11 @@
 package persistence;
 
 import com.sun.javafx.binding.StringFormatter;
+import org.apache.ibatis.jdbc.ScriptRunner;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.Reader;
 import java.sql.*;
 
 public class PersistenceManager {
@@ -91,4 +95,16 @@ public class PersistenceManager {
     public static int getLastId() {
         return lastId;
     }
+
+    public static void resetDB() {
+        try (Connection con = DriverManager.getConnection(url, username, password)) {
+            ScriptRunner sr = new ScriptRunner(con);
+            Reader reader = new BufferedReader(new FileReader("D:\\Corsi_UniTo\\SAS\\Progetto\\impl\\CatERing\\dbreset.sql"));
+            sr.runScript(reader);
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+        }
+    }
+
+
 }

@@ -74,6 +74,9 @@ public class TestTaskManagement6a {
 
             System.out.println("cook " + Task.loadTaskById(taskId).getAssignedCook() + " assigned to task " + taskId);
 
+            // RESET DB TO STARTING CONDITIONS
+            TestUtils.resetDB();
+
         } catch (UseCaseLogicException e) {
             System.err.println(e.getMessage());
         }
