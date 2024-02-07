@@ -195,6 +195,15 @@ public class TaskManager {
         notifyTaskRescheduled(task, newTurn);
     }
 
+    // removeTask removes the task from the turn it's scheduled in, deleteTask deletes the task completely
+    public void removeTask(Task task) throws UseCaseLogicException {
+        checkUserIsAssignedChef("removeTask");
+
+        CatERing.getInstance().getTurnManager().removeTask(task);
+
+        notifyTaskRemoved(task);
+    }
+
     /*############################## EVENT EMITTER METHODS ##############################*/
 
     public void addEventReceiver(TaskEventReceiver rec) {
@@ -256,6 +265,12 @@ public class TaskManager {
     private void notifyTaskRescheduled(Task task, Turn newTurn) {
         for (TaskEventReceiver er: eventReceivers) {
             er.updateTaskRescheduled(task, newTurn);
+        }
+    }
+
+    private void notifyTaskRemoved(Task t) {
+        for (TaskEventReceiver er: eventReceivers) {
+            er.updateTaskRemoved(t);
         }
     }
 

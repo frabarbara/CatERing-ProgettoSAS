@@ -53,4 +53,9 @@ public class TaskPersistence implements TaskEventReceiver {
     public void updateTaskRescheduled(Task task, Turn newTurn) {
         Task.saveReschedule(task, newTurn);
     }
+
+    @Override
+    public void updateTaskRemoved(Task t) {
+        Task.updateRemoveTask(t);
+    }
 }

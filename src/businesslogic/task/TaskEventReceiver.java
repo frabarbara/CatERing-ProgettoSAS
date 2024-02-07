@@ -15,5 +15,6 @@ public interface TaskEventReceiver {
     public void updateAvailChanged(TaskSheet ts, Task t);
     public void updateTaskDeleted(TaskSheet ts, Task t);
     public void updateTaskRescheduled(Task task, Turn newTurn);
+    public void updateTaskRemoved(Task t);
 
 }

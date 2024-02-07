@@ -62,6 +62,10 @@ public class TurnManager {
         task.setAssignedTurn(listedTurn);
     }
 
+    public void removeTask(Task t) {
+        t.setAssignedTurn(null);
+    }
+
     /*############################## PERSISTENCE METHODS ##############################*/
 
     public static ObservableList<Turn> loadAllTurns() {

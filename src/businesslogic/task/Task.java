@@ -179,4 +179,11 @@ public class Task {
         query = "INSERT INTO scheduled_tasks VALUES(" + task.getId() +", " + newTurn.getId() + ");";
         PersistenceManager.executeUpdate(query);
     }
+
+    public static void updateRemoveTask(Task t) {
+        String query = "UPDATE tasks SET assigned_cook_id = NULL WHERE id = " + t.getId() + ";";
+        PersistenceManager.executeUpdate(query);
+        query = "DELETE FROM scheduled_tasks WHERE task_id = " + t.getId() + ";";
+        PersistenceManager.executeUpdate(query);
+    }
 }

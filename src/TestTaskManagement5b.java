@@ -5,11 +5,9 @@ import businesslogic.task.Task;
 import businesslogic.task.TaskManager;
 import businesslogic.task.TaskSheet;
 import businesslogic.turn.Turn;
-import businesslogic.user.Cook;
-import businesslogic.user.User;
 import javafx.collections.ObservableList;
 
-public class TestTaskManagement5a {
+public class TestTaskManagement5b {
 
     public static void main(String[] args) {
 
@@ -61,15 +59,14 @@ public class TestTaskManagement5a {
             taskMgr.scheduleTask(taskToSchedule, targetTurn);
             System.out.println("task after scheduling:\n" + Task.loadTaskById(taskToScheduleId));
 
-            // RESCHEDULE TASK IN TURN
-            System.out.println("\nRESCHEDULING TASK");
-            int taskToRescheduleId = 1;
-            Task taskToReschedule = Task.loadTaskById(taskToRescheduleId);
-            System.out.println("task before rescheduling:\n" + taskToReschedule);
-            Turn targetNewTurn = Turn.loadTurnById(2);
-            taskMgr.rescheduleTask(taskToReschedule, targetNewTurn);
+            // REMOVE TASK FROM TURN
+            System.out.println("\nREMOVING TASK FROM TURN");
+            int taskToRemoveId = 1;
+            Task taskToRemove = Task.loadTaskById(taskToRemoveId);
+            System.out.println("task before removing:\n" + taskToRemove);
+            taskMgr.removeTask(taskToRemove);
 
-            System.out.println("task after rescheduling:\n" + Task.loadTaskById(taskToRescheduleId));
+            System.out.println("task after removing:\n" + Task.loadTaskById(taskToRemoveId));
 
         } catch (UseCaseLogicException e) {
             System.out.println(e.getMessage());
